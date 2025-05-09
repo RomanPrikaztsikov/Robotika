@@ -2,8 +2,8 @@
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
-const int tempPin = A1;
-const int lightPin = A0;
+const int tempPin = A1;  
+const int lightPin = A0; 
 
 float temperature;
 float voltage;
@@ -11,74 +11,70 @@ float degreesF;
 int lightLevel;
 
 unsigned long previousMillis = 0;
-const long interval = 1000;  // Sensorite lugemiseks määratud intervall
+const long interval = 1000; 
 unsigned long emojiMillis = 0;
-const long emojiInterval = 10000; // Aeg, mis määrab emoji kuvamise sageduse
+const long emojiInterval = 10000; 
 unsigned long lastEmojiShowTime = 0;
 unsigned long lastDegreeSwitch = 0;
-bool fDegrees = false;  // Kas kuvada temperatuuri Celsiuse või Fahrenheiti järgi
+bool fDegrees = false;
 
 void setup() {
-  lcd.begin(16, 2); // Algatame LCD ekraani
-  pinMode(tempPin, INPUT);  // Temperatuurianduri sisendi seadistamine
-  pinMode(lightPin, INPUT);  // Valgustundliku sensori sisendi seadistamine
+  lcd.begin(16, 2);  // Initsialiseerib LCD ekraani
+  pinMode(tempPin, INPUT);  // Seadistab temperatuuri anduri sisendiks
+  pinMode(lightPin, INPUT); // Seadistab valgusanduri sisendiks
 }
 
 void loop() {
-  unsigned long currentMillis = millis();  // Aeg, mis on möödunud seadme käivitamisest
+  unsigned long currentMillis = millis(); 
 
-  // Kui on möödunud piisavalt aega, loeme sensoreid ja värskendame ekraani
-  if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
+  if (currentMillis - previousMillis >= interval) {  // Kontrollib, kas on möödunud piisavalt aega
+    previousMillis = currentMillis;  
 
-    lightLevel = analogRead(lightPin);  // Valgustunde lugemine
-    voltage = getVoltage(tempPin);  // Temperatuurianduri pinge lugemine
-    temperature = (voltage - 0.5) * 100.0;  // Arvutame temperatuuri sensorist saadud pinge põhjal
-    degreesF = temperature * (9.0 / 5.0) + 32.0;  // Teisendame temperatuuri Celsiuse järgi Fahrenheiti
+    lightLevel = analogRead(lightPin);  // Loe valguse taset
+    voltage = getVoltage(tempPin);      // Arvuta temperatuuri anduri pinge
+    temperature = (voltage - 0.5) * 100.0; // Arvuta temperatuur Celsiuses
+    degreesF = temperature * (9.0/5.0) + 32.0; // Arvuta temperatuur Fahrenheiti järgi
 
-    lcd.clear();  // Tühjendame ekraani enne uut teavet
-    lcd.setCursor(0, 0);  // Paigutame kursor esimesele reale
+    lcd.clear();  // Tühjenda ekraan
+    lcd.setCursor(0, 0);  
     lcd.print("Temp: ");
     
-    // Iga 500 ms tagant vahetame temperatuuri ühikut
-    if (currentMillis - lastDegreeSwitch > 500) {
-      lastDegreeSwitch = currentMillis;
-      fDegrees = !fDegrees;  // Vahetame temperatuuri kuvamise ühiku
+    if (currentMillis - lastDegreeSwitch > 500) {  // Vaheta ühikut iga 500ms tagant
+      lastDegreeSwitch = currentMillis; 
+      fDegrees = !fDegrees; 
     }
-
-    // Kuvame temperatuuri vastavalt valitud ühikule
+    
     if (fDegrees) {
-      lcd.print(degreesF, 1);  // Kuvame temperatuuri Fahrenheiti järgi
+      lcd.print(degreesF, 1);  // Kuvab temperatuuri Fahrenheiti järgi
       lcd.print(" F");
-    } else {
-      lcd.print(temperature, 1);  // Kuvame temperatuuri Celsiuse järgi
+    }
+    else {
+      lcd.print(temperature, 1);  // Kuvab temperatuuri Celsiuse järgi
       lcd.print(" C");
     }
 
-    lcd.setCursor(0, 1);  // Paigutame kursor teisele reale
+    lcd.setCursor(0, 1);  
     lcd.print("Light: ");
-    lcd.print(lightLevel);  // Kuvame valgustunde taseme
+    lcd.print(1023 - lightLevel);  // Kuvab valguse taseme (1023 - mõõdetud tase)
     lcd.print(" lx");
   }
 
-  // Kuvame emojit iga 10 sekundi tagant, sõltuvalt temperatuurist
-  if (currentMillis - lastEmojiShowTime >= emojiInterval) {
-    lastEmojiShowTime = currentMillis;
+  if (currentMillis - lastEmojiShowTime >= emojiInterval) {  // Emodži kuvamiseks, kui möödub 10 sekundit
+    lastEmojiShowTime = currentMillis; 
 
-    lcd.clear();  // Tühjendame ekraani enne uue emotikoni kuvamist
-    lcd.setCursor(6, 0);  // Paigutame kursor emojile sobivasse kohta
-    if (temperature > 25) {
-      lcd.print(":)");  // Kuvame naeratava näo, kui temperatuur on üle 25°C
-    } else {
-      lcd.print(":(");  // Kuvame kurva näo, kui temperatuur on alla 25°C
+    lcd.clear();  
+    lcd.setCursor(6, 0);  // Aseta kursor ekraani keskossa
+    if (temperature > 25) {  // Kui temperatuur on üle 25 kraadi, kuvab naeratuse
+      lcd.print(":)");
+    } else {  // Kui temperatuur on madalam või võrdne 25 kraadiga, kuvab kurva näo
+      lcd.print(":(");
     }
 
-    delay(1000);  // Paus enne järgmise emotikoni kuvamist
+    delay(1000);  // Oota 1 sekund enne järgmist emodži kuvamist
   }
 }
 
-// Arvutame analoogpinge väärtusest tegeliku pinge
+// Arvuta pinge analooganduri lugemisest
 float getVoltage(int pin) {
-  return (analogRead(pin) * 0.004882814);  // Muundame analoog väärtuse pinge väärtuseks
+  return (analogRead(pin) * 0.004882814);  // Muudab analooganduri väärtuse pingeks
 }
-
