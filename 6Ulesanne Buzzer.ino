@@ -19,8 +19,6 @@ unsigned long lastEmojiShowTime = 0;
 const long emojiInterval = 10000;
 unsigned long lastDegreeSwitch = 0;
 bool fDegrees = false; // määrab, kas näidata temperatuuri Fahrenheiti kraadides
-bool potato = true;
-bool lemon = false;
 
 bool danger = false;
 bool lastDangerState = false;
