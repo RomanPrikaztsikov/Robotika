@@ -7,7 +7,6 @@ const int servoPin = 13;
 const int redPin = 8;
 const int greenPin = 5;
 const int bluePin = 4;
-
 const int openAngle = 90;
 const int closeAngle = 0;
 const int detectionDist = 15;
@@ -15,6 +14,7 @@ const long sadTimeout = 10000;
 
 Servo servo;
 LiquidCrystal lcd(6, 7, 9, 10, 11, 12);
+
 int coinCount = 0;
 unsigned long lastDetectionTime = 0;
 bool lidOpen = false;
@@ -36,7 +36,6 @@ void setup() {
   lcd.print("Sastuspanka!");
 
   setColor(0, 0, 255);
-
   delay(1000);
 }
 
@@ -60,6 +59,7 @@ void loop() {
   updateDisplay();
 }
 
+// Mõõdab kaugust ultraheli anduriga
 long measureDistance() {
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -71,13 +71,14 @@ long measureDistance() {
   return duration * 0.034 / 2;
 }
 
+// Tegeleb mündi tuvastamisega
 void handleDetection() {
   lastDetectionTime = millis();
 
   if (!lidOpen) {
     openLid();
     coinCount++;
-    setColor(0, 255, 0);
+    setColor(0, 255, 0); 
     delay(1000);
   }
 }
@@ -93,12 +94,14 @@ void closeLid() {
   setColor(0, 0, 255);
 }
 
+// Kui keegi pole kaua midagi pannud, muutub LED punaseks
 void checkSadState() {
   if (millis() - lastDetectionTime > sadTimeout) {
     setColor(255, 0, 0);
   }
 }
 
+// LCD-ekraani uuendamine sõltuvalt olekust
 void updateDisplay() {
   lcd.clear();
 
@@ -125,6 +128,7 @@ void updateDisplay() {
 
   delay(200);
 }
+
 
 void setColor(int red, int green, int blue) {
   analogWrite(redPin, red);
